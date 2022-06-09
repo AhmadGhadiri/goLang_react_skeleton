@@ -1,10 +1,15 @@
 package store
 
-import "errors"
+import (
+	"errors"
+	"time"
+)
 
 type User struct {
-	Username string `binding:"required,min=5,max=30"`
-	Password string `binding:"required,min=7,max=32"`
+	Username   string `binding:"required,min=5,max=30"`
+	Password   string `binding:"required,min=7,max=32"`
+	CreatedAt  time.Time
+	ModifiedAt time.Time
 }
 
 func AddUser(user *User) error {
