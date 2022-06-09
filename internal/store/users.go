@@ -1,19 +1,37 @@
 package store
 
 import (
-	"errors"
+	"crypto/rand"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
-	Username   string `binding:"required,min=5,max=30"`
-	Password   string `binding:"required,min=7,max=32"`
-	CreatedAt  time.Time
-	ModifiedAt time.Time
+	Username       string `binding:"required,min=5,max=30"`
+	Password       string `pg:"-" binding:"required,min=7,max=32"`
+	HashedPassword []byte `json:"-"`
+	Salt           []byte `json:"-"`
+	CreatedAt      time.Time
+	ModifiedAt     time.Time
 }
 
 func AddUser(user *User) error {
-	_, err := db.Model(user).Returning("*").Insert()
+	salt, err := GenerateSalt()
+	if err != nil {
+		return err
+	}
+
+	toHash := append([]byte(user.Password), salt...)
+	hashedPassword, err := bcrypt.GenerateFromPassword(toHash, bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	user.Salt = salt
+	user.HashedPassword = hashedPassword
+
+	_, err = db.Model(user).Returning("*").Insert()
 	if err != nil {
 		return err
 	}
@@ -26,10 +44,21 @@ func AuthenticateUser(username, password string) (*User, error) {
 		"username = ?", username).Select(); err != nil {
 		return nil, err
 	}
-	if password != user.Password {
-		return nil, errors.New("password not valid")
+
+	salted := append([]byte(password), user.Salt...)
+
+	if err := bcrypt.CompareHashAndPassword(user.HashedPassword, salted); err != nil {
+		return nil, err
 	}
 	return user, nil
+}
+
+func GenerateSalt() ([]byte, error) {
+	salt := make([]byte, 16)
+	if _, err := rand.Read(salt); err != nil {
+		return nil, err
+	}
+	return salt, nil
 }
 
 var Users []*User
