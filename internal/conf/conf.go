@@ -14,6 +14,7 @@ const (
 	dbNameKey     = "RGB_DB_NAME"
 	dbUserKey     = "RGB_DB_USER"
 	dbPasswordKey = "RGB_DB_PASSWORD"
+	jwtSecretKey  = "RGB_JWT_SECRET"
 )
 
 type Config struct {
@@ -24,6 +25,7 @@ type Config struct {
 	DbName     string
 	DbUser     string
 	DbPassword string
+	JwtSecret  string
 }
 
 func NewConfig() Config {
@@ -62,6 +64,11 @@ func NewConfig() Config {
 		logAndPanic(dbPasswordKey)
 	}
 
+	jwtSecret, ok := os.LookupEnv(jwtSecretKey)
+	if !ok || jwtSecret == "" {
+		logAndPanic(jwtSecretKey)
+	}
+
 	return Config{
 		Host:       host,
 		Port:       port,
@@ -70,6 +77,7 @@ func NewConfig() Config {
 		DbName:     dbName,
 		DbUser:     dbUser,
 		DbPassword: dbPassword,
+		JwtSecret:  jwtSecret,
 	}
 }
 

@@ -9,6 +9,7 @@ import (
 )
 
 type User struct {
+	ID             int64
 	Username       string `binding:"required,min=5,max=30"`
 	Password       string `pg:"-" binding:"required,min=7,max=32"`
 	HashedPassword []byte `json:"-"`
@@ -61,6 +62,17 @@ func GenerateSalt() ([]byte, error) {
 		return nil, err
 	}
 	return salt, nil
+}
+
+func FetchUser(id int) (*User, error) {
+	user := new(User)
+	user.ID = id
+	err := db.Model(user).Returning("*").WherePK().Select()
+	if err != nil {
+		log.Error().Err(err).Msg("Error fetching user")
+		return nil, err
+	}
+	return user, nil
 }
 
 var Users []*User

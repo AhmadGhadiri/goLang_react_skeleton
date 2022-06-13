@@ -7,6 +7,7 @@ import (
 )
 
 func Start(cfg conf.Config) {
+	JwtSetup(cfg)
 	store.SetDBConnection(database.NewDBOptions(cfg))
 
 	router := setRouter()
