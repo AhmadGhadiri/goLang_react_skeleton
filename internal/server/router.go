@@ -14,6 +14,16 @@ func setRouter() *gin.Engine {
 	api := router.Group("/api")
 	api.POST("/signup", signUp)
 	api.POST("/signin", signIn)
+
+	// Create a group for authorized users
+	authorized := api.Group("/")
+	authorized.Use(authorization)
+	{
+		authorized.POST("/posts", createPost)
+		authorized.GET("/posts", indexPosts)
+		authorized.PUT("/posts", updatePost)
+		authorized.DELETE("/posts/:id", deletePost)
+	}
 	// {
 	// 	// Add /hello GET route to router and define route handler function
 	// 	api.GET("/hello", func(ctx *gin.Context) {

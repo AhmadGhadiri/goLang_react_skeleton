@@ -1,21 +1,33 @@
 package store
 
 import (
+	"context"
 	"crypto/rand"
 	"time"
 
+	"github.com/go-pg/pg/v10"
 	"github.com/rs/zerolog/log"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
-	ID             int64
+	ID             int
 	Username       string `binding:"required,min=5,max=30"`
 	Password       string `pg:"-" binding:"required,min=7,max=32"`
 	HashedPassword []byte `json:"-"`
 	Salt           []byte `json:"-"`
 	CreatedAt      time.Time
 	ModifiedAt     time.Time
+	Posts          []*Post `json:"-" pg:"fk:user_id,rel:has-many,on_delete:CASCADE"`
+}
+
+var _ pg.AfterSelectHook = (*User)(nil)
+
+func (user *User) AfterSelect(ctx context.Context) error {
+	if user.Posts == nil {
+		user.Posts = []*Post{}
+	}
+	return nil
 }
 
 func AddUser(user *User) error {
