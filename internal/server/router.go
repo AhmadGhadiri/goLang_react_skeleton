@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"rgb/internal/store"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,8 +13,16 @@ func setRouter() *gin.Engine {
 
 	// Create API route group
 	api := router.Group("/api")
-	api.POST("/signup", signUp)
-	api.POST("/signin", signIn)
+	api.Use(customErrors)
+	{
+		/* bind request data before even hitting signUp and signIn handlers,
+		   which means that handlers will only be reached if form validations
+		   are passed. With setup like this, handlers don’t need to think
+		   about binding errors, because there was none if handler is reached
+		*/
+		api.POST("/signup", gin.Bind(store.User{}), signUp)
+		api.POST("/signin", gin.Bind(store.User{}), signIn)
+	}
 
 	// Create a group for authorized users
 	authorized := api.Group("/")
