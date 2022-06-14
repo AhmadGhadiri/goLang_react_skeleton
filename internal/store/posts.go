@@ -3,7 +3,7 @@ package store
 import (
 	"time"
 
-	"github.com/go-pg/pg/orm"
+	"github.com/go-pg/pg/v10/orm"
 	"github.com/rs/zerolog/log"
 )
 

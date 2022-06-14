@@ -108,6 +108,6 @@ func customValidationError(err validator.FieldError) string {
 	case "max":
 		return fmt.Sprintf("%s cannot be longer than %s characters.", err.Field(), err.Param())
 	default:
-		return err.Error()
+		return err.Kind().String()
 	}
 }

@@ -34,7 +34,7 @@ func createPost(ctx *gin.Context) {
 }
 
 func indexPosts(ctx *gin.Context) {
-	user, err := currentUser()
+	user, err := currentUser(ctx)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
