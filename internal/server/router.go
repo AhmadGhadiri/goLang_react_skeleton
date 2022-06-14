@@ -11,6 +11,8 @@ func setRouter() *gin.Engine {
 	// Creates default gin router with Logger and Recovery middleware already attached
 	router := gin.Default()
 
+	router.Use(CORSMiddleware())
+
 	// Create API route group
 	api := router.Group("/api")
 	api.Use(customErrors)
