@@ -24,6 +24,10 @@ func setRouter() *gin.Engine {
 		*/
 		api.POST("/signup", gin.Bind(store.User{}), signUp)
 		api.POST("/signin", gin.Bind(store.User{}), signIn)
+
+		// Test functions
+		api.GET("/test/all", testAll)
+		api.GET("/test/user", testUser)
 	}
 
 	// Create a group for authorized users

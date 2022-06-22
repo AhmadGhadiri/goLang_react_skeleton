@@ -31,3 +31,15 @@ func signIn(ctx *gin.Context) {
 		"jwt": GenerateJWT(user),
 	})
 }
+
+func testAll(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{
+		"body": "public content",
+	})
+}
+
+func testUser(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{
+		"body": "user content",
+	})
+}
