@@ -2,14 +2,21 @@ package server
 
 import (
 	"net/http"
+	"rgb/internal/conf"
 	"rgb/internal/store"
 
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 )
 
-func setRouter() *gin.Engine {
+func SetRouter(cfg conf.Config) *gin.Engine {
 	// Creates default gin router with Logger and Recovery middleware already attached
 	router := gin.Default()
+
+	// Serve static files to frontend if server is started in production environment
+	if cfg.Env == "prod" {
+		router.Use(static.Serve("/", static.LocalFile("./assets/build", true)))
+	}
 
 	router.Use(CORSMiddleware())
 

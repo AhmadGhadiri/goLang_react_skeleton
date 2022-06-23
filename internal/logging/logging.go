@@ -33,6 +33,10 @@ func SetGinLogToFile() {
 func ConfigureLogger(env string) {
 	zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	switch env {
+	case "test":
+		stdOutWriter := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: "15:04:05.000"}
+		logger := zerolog.New(stdOutWriter).With().Timestamp().Logger()
+		log.Logger = logger
 	case "dev":
 		stdOutWriter := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: "15:04:05.000"}
 		logger := zerolog.New(stdOutWriter).With().Timestamp().Logger()

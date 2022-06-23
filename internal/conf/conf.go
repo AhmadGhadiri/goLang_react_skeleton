@@ -26,9 +26,10 @@ type Config struct {
 	DbUser     string
 	DbPassword string
 	JwtSecret  string
+	Env        string
 }
 
-func NewConfig() Config {
+func NewConfig(env string) Config {
 	host, ok := os.LookupEnv(hostKey)
 	if !ok || host == "" {
 		logAndPanic(hostKey)
@@ -78,9 +79,16 @@ func NewConfig() Config {
 		DbUser:     dbUser,
 		DbPassword: dbPassword,
 		JwtSecret:  jwtSecret,
+		Env:        env,
 	}
 }
 
 func logAndPanic(envVar string) {
 	log.Panic().Str("envVar", envVar).Msg("ENV variable not set or value not valid")
+}
+
+func NewTestConfig() Config {
+	testConfig := NewConfig("test")
+	testConfig.DbName = testConfig.DbName + "_test"
+	return testConfig
 }

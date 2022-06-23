@@ -21,7 +21,7 @@ func Start(cfg conf.Config) {
 	JwtSetup(cfg)
 	store.SetDBConnection(database.NewDBOptions(cfg))
 
-	router := setRouter()
+	router := SetRouter(cfg)
 
 	server := &http.Server{
 		Addr:    cfg.Host + ":" + cfg.Port,

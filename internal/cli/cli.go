@@ -23,7 +23,7 @@ func usage() {
 
 func Parse() {
 	flag.Usage = usage
-	env := flag.String("env", "dev", `Sets run environment. Possible values are "dev" and "prod"`)
+	env := flag.String("env", "dev", `Sets run environment. Possible values are "test", "dev", and "prod"`)
 	flag.Parse()
 	logging.ConfigureLogger(*env)
 	if *env == "prod" {

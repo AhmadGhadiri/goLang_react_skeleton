@@ -8,5 +8,5 @@ import (
 
 func main() {
 	cli.Parse()
-	server.Start(conf.NewConfig())
+	server.Start(conf.NewConfig("prod"))
 }
