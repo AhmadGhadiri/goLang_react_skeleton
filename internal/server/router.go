@@ -13,6 +13,10 @@ func SetRouter(cfg conf.Config) *gin.Engine {
 	// Creates default gin router with Logger and Recovery middleware already attached
 	router := gin.Default()
 
+	// Enables automatic redirection if the current route can't be matched but a
+	// handler for the path with (without) the trailing slash exists.
+	router.RedirectTrailingSlash = true
+
 	// Serve static files to frontend if server is started in production environment
 	if cfg.Env == "prod" {
 		router.Use(static.Serve("/", static.LocalFile("./assets/build", true)))
