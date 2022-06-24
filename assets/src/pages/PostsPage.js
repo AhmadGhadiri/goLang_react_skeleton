@@ -6,6 +6,7 @@ import { Navigate } from 'react-router-dom';
 const PostsPage = () => {
     const authContext = useContext(AuthContext);
     if (authContext.loggedIn) {
+
         return (<Posts />);
     }
     else {

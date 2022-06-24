@@ -1,25 +1,21 @@
-import { useState, useContext } from 'react';
+import { useContext, useState, useEffect, useCallback } from "react";
 
-import AuthContext from '../../store/auth-context';
-import Errors from '../Errors/Errors';
+import AuthContext from "../../store/auth-context";
+import Errors from "../Errors/Errors";
 import PostForm from "./PostForm";
+import PostsList from "./PostsLists";
 
-const Post = (props) => {
-    const [editing, setEditing] = useState(false);
+const Posts = () => {
+    const authContext = useContext(AuthContext);
+    const [posts, setPosts] = useState([]);
     const [errors, setErrors] = useState({});
 
-    const authContext = useContext(AuthContext);
-
-    const switchModeHandler = () => {
-        setEditing((prevState) => !prevState);
+    const fetchPostsHandler = useCallback(async () => {
         setErrors({});
-    };
 
-    async function deleteHandler() {
         try {
-            const response = await fetch('api/posts/' + props.post.ID,
+            const response = await fetch('/api/posts',
                 {
-                    method: 'DELETE',
                     headers: {
                         'Authorization': 'Bearer ' + authContext.token,
                     },
@@ -27,7 +23,7 @@ const Post = (props) => {
             );
             const data = await response.json();
             if (!response.ok) {
-                let errorText = 'Failed to add new post.';
+                let errorText = 'Fetching posts failed.';
                 if (!data.hasOwnProperty('error')) {
                     throw new Error(errorText);
                 }
@@ -37,41 +33,49 @@ const Post = (props) => {
                     setErrors(data['error']);
                 }
             } else {
-                props.onDeletePost(props.post.ID);
+                setPosts(data.data);
             }
         } catch (error) {
             setErrors({ "error": error.message });
         }
-    };
+    }, [authContext.token]);
 
-    const editPostHandler = () => {
-        setEditing(false);
-        props.onEditPost();
+    useEffect(() => {
+        fetchPostsHandler();
+    }, [fetchPostsHandler]);
+
+    const addPostHandler = (postData) => {
+        setPosts((prevState) => { return [...prevState, postData] });
     }
 
-    const cardTitle = editing ? 'Edit post' : props.post.Title;
-    const cardBody = editing ? <PostForm post={props.post} onEditPost={editPostHandler} editing={true} /> : props.post.Content;
-    const switchModeButtonText = editing ? 'Cancel' : 'Edit';
-    const cardButtons = editing ?
-        <div className="container">
-            <button type="button" className="btn btn-link" onClick={switchModeHandler}>{switchModeButtonText}</button>
-            <button type="button" className="btn btn-danger float-right mx-3" onClick={deleteHandler}>Delete</button>
-        </div>
+    const deletePostHandler = (postID) => {
+        setPosts((prevState) => {
+            return prevState.filter(post => { return post.ID !== postID; })
+        })
+    }
+
+    const editPostHandler = () => {
+        fetchPostsHandler();
+    }
+
+    const postsContent = posts.length === 0 ?
+        <p>No posts yet</p>
         :
-        <div className="container">
-            <button type="button" className="btn btn-link" onClick={switchModeHandler}>{switchModeButtonText}</button>
-            <button type="button" className="btn btn-danger float-right mx-3" onClick={deleteHandler}>Delete</button>
-        </div>
+        <PostsList
+            posts={posts}
+            onEditPost={editPostHandler}
+            onDeletePost={deletePostHandler} />;
+
     const errorContent = Object.keys(errors).length === 0 ? null : Errors(errors);
 
     return (
-        <div className="card mb-5 pb-2">
-            <div className="card-header">{cardTitle}</div>
-            <div className="card-body">{cardBody}</div>
-            {cardButtons}
+        <section>
+            <h1 className="pb-4">My posts</h1>
+            <PostForm onAddPost={addPostHandler} />
             {errorContent}
-        </div>
+            {postsContent}
+        </section>
     );
 };
 
-export default Post;
+export default Posts;

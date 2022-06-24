@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 	"rgb/internal/store"
 	"strconv"
@@ -40,14 +41,19 @@ func indexPosts(ctx *gin.Context) {
 		return
 	}
 
-	if err = store.FetchUserPosts(user); err != nil {
+	posts := []store.Post{}
+
+	// For avoiding the warning. Need to figure out a better way
+	fmt.Println("post", posts)
+
+	if posts, err = store.FetchUserPosts(user); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"msg":  "Posts fetched successfully.",
-		"data": user.Posts,
+		"data": posts,
 	})
 }
 
