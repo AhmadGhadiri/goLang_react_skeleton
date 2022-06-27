@@ -43,7 +43,7 @@ func indexPosts(ctx *gin.Context) {
 
 	posts := []store.Post{}
 
-	// For avoiding the warning. Need to figure out a better way
+	// TODO: For avoiding the warning. Need to figure out a better way
 	fmt.Println("post", posts)
 
 	if posts, err = store.FetchUserPosts(user); err != nil {

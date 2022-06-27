@@ -11,9 +11,11 @@ import (
 )
 
 type User struct {
-	ID             int
-	Username       string `binding:"required,min=5,max=30"`
+	ID int
+	// TODO: Need to figure out a way for conditional binding for signin and signup for username
+	Username       string
 	Password       string `pg:"-" binding:"required,min=7,max=32"`
+	Email          string `json:"email" binding:"required,email"`
 	HashedPassword []byte `json:"-"`
 	Salt           []byte `json:"-"`
 	CreatedAt      time.Time
@@ -53,10 +55,10 @@ func AddUser(user *User) error {
 	return nil
 }
 
-func AuthenticateUser(username, password string) (*User, error) {
+func AuthenticateUser(email, password string) (*User, error) {
 	user := new(User)
 	if err := db.Model(user).Where(
-		"username = ?", username).Select(); err != nil {
+		"email = ?", email).Select(); err != nil {
 		return nil, err
 	}
 

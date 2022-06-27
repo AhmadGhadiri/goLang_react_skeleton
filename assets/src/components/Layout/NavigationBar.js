@@ -9,6 +9,7 @@ const NavigationBar = () => {
     const authContext = useContext(AuthContext);
 
     const loggedIn = authContext.loggedIn;
+    const currentUser = authContext.currentUser;
 
     const logoutHandler = () => {
         authContext.logout();
@@ -29,7 +30,7 @@ const NavigationBar = () => {
                         </li>
                         {loggedIn && (
                             <li key="uniq2" className="nav-item">
-                                <Link className="nav-link" to="/posts">My posts</Link>
+                                <Link className="nav-link" to="/posts">{currentUser}'s posts</Link>
                             </li>
                         )}
                     </ul>

@@ -11,21 +11,28 @@ export const AuthContextProvider = (props) => {
     const tokenKey = 'rgbToken';
 
     const [token, setToken] = useState(localStorage.getItem(tokenKey));
+    const [currentuser, setCurrentUser] = useState(localStorage.getItem("currentUser"));
+
 
     const loggedIn = !!token;
 
-    const loginHandler = (token) => {
+    const loginHandler = (token, username) => {
         setToken(token);
+        setCurrentUser(username);
         localStorage.setItem(tokenKey, token);
+        localStorage.setItem("currentUser", username);
     };
 
     const logoutHandler = () => {
         setToken(null);
+        setCurrentUser(null);
         localStorage.removeItem(tokenKey);
+        localStorage.removeItem("currentUser");
     };
 
     const contextValue = {
         token: token,
+        currentUser: currentuser,
         loggedIn: loggedIn,
         login: loginHandler,
         logout: logoutHandler,

@@ -68,6 +68,7 @@ func TestFetchUser(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, user.ID, fetchedUser.ID)
 	assert.Equal(t, user.Username, fetchedUser.Username)
+	assert.Equal(t, user.Email, fetchedUser.Email)
 	assert.Equal(t, user.Salt, fetchedUser.Salt)
 	assert.Equal(t, user.HashedPassword, fetchedUser.HashedPassword)
 }
